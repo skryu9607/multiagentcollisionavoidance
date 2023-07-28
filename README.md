@@ -3,7 +3,7 @@
 This repository contains a Python code for simulating Deadlock-solving dynamics based on Voronoi diagrams. The algorithm takes into account both the agent's preference to reach a goal and the presence of other agents and obstacles in the environment.
 
 ## Code Overview
-
+ 
 The main functions are:
 
 - `chk_cross()`: This function checks if two lines cross.

@@ -1,4 +1,4 @@
-from VoronoiCA import VoronoiCA
+from voronoi_ca import VoronoiCA
 import numpy as np
 
 def main():

@@ -5,6 +5,15 @@ class Util():
     def __init__(self) -> None:
         pass
 
+    def cal_perimeter(self, polygon):
+        ## polygon = [[x1, y1], [x2, y2], ..., [xn, yn]]
+        ll = 0
+        for i in range(len(polygon)):
+            xd = polygon[i][0] - polygon[(i+1)%len(polygon)][0]
+            yd = polygon[i][1] - polygon[(i+1)%len(polygon)][1]
+            ll += LA.norm([xd, yd])
+        return ll
+
     def chk_inside(self, p1, obs):
         chk = 0
         flag = 0
@@ -85,7 +94,6 @@ class Util():
         mat = list(range(N))
         p1 = mat[0]
         p2 = mat[1]
-        flg = True
         new_polygon = []
         for i in range(N):
             vec1 = polygon[p1%N] - polygon[(p1+1)%N]
@@ -102,5 +110,48 @@ class Util():
             p1 = mat[(mat.index(p1) + 1)%len(mat)]
             p2 = mat[(mat.index(p2) + 1)%len(mat)]
             new_polygon.append(list(new_point))
+
+        flg = True
+        while flg:
+            if len(new_polygon) > 3:
+                E = []
+                for i in range(len(new_polygon)):
+                    E.append([i, (i + 1) % len(new_polygon)])
+                # print(E)
+                Comb = []
+                for i in range(len(E) - 2):
+                    for j in range(i + 2, len(E) - (i == 0)):
+                        Comb.append([i, j])
+                # print(Comb)
+                for i in range(len(Comb)):
+                    # print(E[Comb[i][0]])
+                    p11 = new_polygon[E[Comb[i][0]][0]]
+                    p12 = new_polygon[E[Comb[i][0]][1]]
+                    p21 = new_polygon[E[Comb[i][1]][0]]
+                    p22 = new_polygon[E[Comb[i][1]][1]]
+                    if self.chk_cross(p11, p12, p21, p22):
+                        new_pt = self.get_crosspt(p11, p12, p21, p22)
+                        poly1 = []
+                        poly2 = []
+                        for j in range(len(E)):
+                            if j < E[Comb[i][0]][1] or j > E[Comb[i][1]][0]:
+                                poly2.append(new_polygon[j])
+                            else:
+                                poly1.append(new_polygon[j])
+                        poly1.append(new_pt)
+                        poly2.insert(E[Comb[i][0]][0]+1, new_pt)
+                        l_poly1 = self.cal_perimeter(poly1)
+                        l_poly2 = self.cal_perimeter(poly2)
+                        if l_poly1 > l_poly2:
+                            new_polygon = poly1
+                            # print(polygon)
+                            break
+                        else:
+                            new_polygon = poly2
+                            break
+                    if i == len(Comb) - 1:
+                        flg = False
+            else:
+                flg = False
 
         return np.asarray(new_polygon)

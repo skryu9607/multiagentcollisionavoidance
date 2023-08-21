@@ -1,6 +1,7 @@
 {
     // Use IntelliSense to learn about possible attributes.
     // Hover to view descriptions of existing attributes.
+    // import timer, pydevd, debugpy
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
@@ -8,7 +9,9 @@
             "name": "Python: Current File",
             "type": "python",
             "request": "launch",
-            "program": "src/main.py",
+            "program" : "src/cbba/prm/main.py",
+            //"program": "src/voronoica/main-2.py",
+            //"program": "src/cbba/main.py",
             "console": "integratedTerminal",
             "justMyCode": true
         }

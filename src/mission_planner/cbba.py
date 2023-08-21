@@ -1,8 +1,8 @@
 import numpy as np
 import math
 
-from util import Util
-from params import p_
+from common.util import Util
+from mission_planner.params import p_
 
 class CBBA(Util):
     def __init__(self) -> None:
@@ -95,7 +95,7 @@ class CBBA(Util):
         idx_max = np.argmax(scores)
         return max(scores), idx_max
     
-    def generate_task_points(self, n):
+    def generate_points(self, n, roi_x, roi_y):
         """
         Generates a 2D array with n rows and 2 columns. 
         Each row represents the x and y coordinates of a task.
@@ -108,13 +108,13 @@ class CBBA(Util):
             Each row represents the x and y coordinates of a task.
         """
         pos_tasks = np.random.random(size=(n, 2))
-        pos_tasks[:, 0] = pos_tasks[:, 0] * (p_.roi_x[1] - p_.roi_x[0]) - p_.roi_x[0]
-        pos_tasks[:, 1] = pos_tasks[:, 1] * (p_.roi_y[1] - p_.roi_y[0]) - p_.roi_y[0]
+        pos_tasks[:, 0] = pos_tasks[:, 0] * (roi_x[1] - roi_x[0]) - roi_x[0]
+        pos_tasks[:, 1] = pos_tasks[:, 1] * (roi_y[1] - roi_y[0]) - roi_y[0]
         return pos_tasks
-
-    def process(self, num_task, num_agent, num_lt, llambda):
-        pos_tasks = self.generate_task_points(num_task)  # task position setting
-        pos_agents = np.array(p_.pos_agents)
+    
+    def core_bidding(self, pos_tasks, pos_agents, num_lt, llambda):
+        num_task = pos_tasks.shape[0]
+        num_agent = pos_agents.shape[0]
 
         y_winning_bid = np.zeros((num_agent, num_task))
         z_winning_agent = -np.ones((num_agent, num_task))
@@ -335,6 +335,14 @@ class CBBA(Util):
                 flag_continue_consensus = False
                 print("not converged")
 
+        return pos_agents, pos_tasks, p_path
+
+    def process(self, num_task, num_lt, llambda):
+        pos_tasks = self.generate_points(num_task, p_.roi_x, p_.roi_y)  # task position setting
+        pos_agents = np.array(p_.pos_agents)
+        pos_agents, pos_tasks, p_path = \
+            self.core_bidding(pos_tasks, pos_agents, num_lt, llambda)
+        
         return pos_agents, pos_tasks, p_path
 
 
